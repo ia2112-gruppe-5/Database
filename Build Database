@@ -1,0 +1,137 @@
+USE [Alarmsystem]
+GO
+/****** Object:  Table [dbo].[Abonenter]    Script Date: 11/03/2019 14:41:40 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Abonenter](
+	[Mailaddresse] [nvarchar](100) NOT NULL,
+	[Fornavn] [nvarchar](50) NULL,
+	[Etternavn] [nvarchar](50) NULL,
+	[Telefonnummer] [int] NULL,
+	[Postnummer] [char](4) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Mailaddresse] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AlarmData]    Script Date: 11/03/2019 14:41:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AlarmData](
+	[Mailaddresse] [nvarchar](100) NOT NULL,
+	[AlarmId] [timestamp] NOT NULL,
+ CONSTRAINT [PK_AlarmData] PRIMARY KEY CLUSTERED 
+(
+	[Mailaddresse] ASC,
+	[AlarmId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Alarmer]    Script Date: 11/03/2019 14:41:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Alarmer](
+	[AlarmId] [timestamp] NOT NULL,
+	[Beskrivelse] [nvarchar](100) NULL,
+	[GrenseId] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[AlarmId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AlarmGrenser]    Script Date: 11/03/2019 14:41:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AlarmGrenser](
+	[GrenseId] [int] NOT NULL,
+	[GrenseNavn] [varchar](50) NULL,
+	[GrenseVerdi] [float] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[GrenseId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Måledata]    Script Date: 11/03/2019 14:41:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Måledata](
+	[Måletidspunkt] [timestamp] NOT NULL,
+	[Mail] [nvarchar](100) NOT NULL,
+ CONSTRAINT [PK_Måledata] PRIMARY KEY CLUSTERED 
+(
+	[Mail] ASC,
+	[Måletidspunkt] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Målinger]    Script Date: 11/03/2019 14:41:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Målinger](
+	[Måletidspunkt] [timestamp] NOT NULL,
+	[Temperatur] [float] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Måletidspunkt] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Postaddresse]    Script Date: 11/03/2019 14:41:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Postaddresse](
+	[Postnummer] [char](4) NOT NULL,
+	[Poststed] [nvarchar](50) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Postnummer] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Abonenter]  WITH CHECK ADD  CONSTRAINT [FK_Abonenter_ToTable] FOREIGN KEY([Postnummer])
+REFERENCES [dbo].[Postaddresse] ([Postnummer])
+GO
+ALTER TABLE [dbo].[Abonenter] CHECK CONSTRAINT [FK_Abonenter_ToTable]
+GO
+ALTER TABLE [dbo].[AlarmData]  WITH CHECK ADD  CONSTRAINT [FK_AlarmData_Abonenter] FOREIGN KEY([Mailaddresse])
+REFERENCES [dbo].[Abonenter] ([Mailaddresse])
+GO
+ALTER TABLE [dbo].[AlarmData] CHECK CONSTRAINT [FK_AlarmData_Abonenter]
+GO
+ALTER TABLE [dbo].[AlarmData]  WITH CHECK ADD  CONSTRAINT [FK_AlarmData_Alarmer] FOREIGN KEY([AlarmId])
+REFERENCES [dbo].[Alarmer] ([AlarmId])
+GO
+ALTER TABLE [dbo].[AlarmData] CHECK CONSTRAINT [FK_AlarmData_Alarmer]
+GO
+ALTER TABLE [dbo].[Alarmer]  WITH CHECK ADD  CONSTRAINT [FK_Alarmer_AlarmGrenser] FOREIGN KEY([GrenseId])
+REFERENCES [dbo].[AlarmGrenser] ([GrenseId])
+GO
+ALTER TABLE [dbo].[Alarmer] CHECK CONSTRAINT [FK_Alarmer_AlarmGrenser]
+GO
+ALTER TABLE [dbo].[Måledata]  WITH CHECK ADD  CONSTRAINT [FK_Måledata_Abonenter] FOREIGN KEY([Mail])
+REFERENCES [dbo].[Abonenter] ([Mailaddresse])
+GO
+ALTER TABLE [dbo].[Måledata] CHECK CONSTRAINT [FK_Måledata_Abonenter]
+GO
+ALTER TABLE [dbo].[Måledata]  WITH CHECK ADD  CONSTRAINT [FK_Måledata_ToTable_1] FOREIGN KEY([Måletidspunkt])
+REFERENCES [dbo].[Målinger] ([Måletidspunkt])
+GO
+ALTER TABLE [dbo].[Måledata] CHECK CONSTRAINT [FK_Måledata_ToTable_1]
+GO
